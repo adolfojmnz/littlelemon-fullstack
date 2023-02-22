@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Menu Items</title>
+    </head>
+
+    <body>
+        <h1>Menu Items</h1>
+        <form method="POST" id="form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Submit</button>
+        </form>
+        
+        <script>
+            const form = document.getElementById('form');
+            form.addEventListener('submit', eventHandler);
+
+            function eventHandler(e) {
+                e.preventDefault();
+
+                fetch(form.action, {method: 'POST', body: new FormData(form)})
+                .then(response=>response.json())
+                .then(data=>{
+                    if (data.message === 'success') {
+                        alert('Success!');
+                        form.reset();
+                    } else {
+                        alert('Invalid sumission! Please check your data and submit again.');
+                    }
+                });
+            }
+
+        </script>
+    </body>
+
+</html>
