@@ -8,6 +8,7 @@ django = "*"
 psycopg2 = {extras = ["binary"], version = "*"}
 django-environ = "*"
 mysqlclient = "*"
+djangorestframework = "*"
 
 [dev-packages]
 
