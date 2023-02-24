@@ -1,9 +1,7 @@
 from django.urls import path
 
-from .views import UserCommentView
-from .views import commentView
-
+from . import views
 
 urlpatterns = [
-    path('new/', commentView),
+    path('new/', views.UserCommentView.as_view()),
 ]
