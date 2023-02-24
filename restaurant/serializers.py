@@ -8,3 +8,4 @@ class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = ['first_name', 'reservation_date', 'reservation_time', 'reservation_slot']
+        unique_together = ['resevertation_date', 'reservation_time', 'reservation_slot']
