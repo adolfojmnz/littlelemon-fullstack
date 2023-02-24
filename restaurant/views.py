@@ -4,6 +4,11 @@ from django.views import View
 
 from datetime import datetime
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+from .serializers import BookingSerializer
+
 from .models import Menu, Booking
 from .forms import BookingForm
 
@@ -25,6 +30,21 @@ class Bookings(GetBookingsAsJSONMixin, View):
             'bookings': self.get_bookings()
         }
         return render(request, self.template_name, context)
+
+
+class BookingsAPI(APIView):
+    model = Booking
+    queryset = model.objects.all()
+    serializer_class = BookingSerializer
+
+    def get(self, request, *args, **kwargs):
+        date = request.query_params.get('date')
+        reservation_date = date if date is not None else datetime.today().date()
+        self.queryset = self.queryset.filter(reservation_date=reservation_date)
+        if self.queryset.exists():
+            serialized_data = self.serializer_class(self.queryset, many=True)
+            return Response(serialized_data.data, status=200)
+        return Response({'message': 'No Booking'}, status=404)
 
 
 class Book(GetBookingsAsJSONMixin, View):
