@@ -36,11 +36,8 @@
     <!--End row-->
   </article>
 </section>
-<!-- Add your code inside the script tags below  -->
+
 <script>
-  // form 
-  const date = document.getElementById('id_reservation_date').type='date';
-  const time = document.getElementById('id_reservation_time').type='time';
 
   // helper functions
   function prefixWithZero(string, numberOfZeros) {
@@ -59,39 +56,81 @@
     return DayOrMonthAsString;
   }
 
-  // bookings date
-  const span = document.getElementById('bookings-date');
-  bookingDate = new Date();
-  const [day, month, year] = [
-    formatDayOrMonth(String(bookingDate.getDate())),
-    formatDayOrMonth(String(bookingDate.getMonth() + 1)),
-    String(bookingDate.getFullYear()),
-  ]
-  span.appendChild(document.createTextNode(day + '/' + month + '/' + year));
-
-  //bookings
-  const pre = document.getElementById('bookings');
-  const p = document.createElement('p');
-  var content = document.createTextNode('')
-
-  const parse_content = '{{ bookings|safe }}';
-  if (parse_content === 'No Booking') {
-    content = document.createTextNode(parse_content);
-    pre.appendChild(p.appendChild(content));
-  } else {
-    const bookings = JSON.parse('{{ bookings|safe }}');
-
-    for (let idx in bookings) {
-      let booking_string = '';
-      booking_string += bookings[idx]['fields']['first_name'] + ' at ';
-      booking_string += bookings[idx]['fields']['reservation_time'] + ' on slot #';
-      booking_string += bookings[idx]['fields']['reservation_slot'];
-
-      let p = document.createElement('p');
-      p.appendChild(document.createTextNode(booking_string));
-      pre.appendChild(p);
-    }
+  function getDateAsTuple() {
+    date = new Date();
+    return [
+      formatDayOrMonth(String(date.getDate())),
+      formatDayOrMonth(String(date.getMonth() + 1)),
+      String(date.getFullYear()),
+    ];
   }
+
+  function getDateAsString() {
+    date = new Date();
+    var output = '';
+    output += String(date.getFullYear()) + '-';
+    output += formatDayOrMonth(String(date.getMonth() + 1)) + '-';
+    output += formatDayOrMonth(String(date.getDate()));
+    return output;
+  }
+
+  function getDateFromInput() {
+    var input_date = document.getElementById('id_reservation_date').value;
+    return input_date;
+  }
+
+  function fetchBookings() {
+    var query_date = getDateFromInput();
+
+    span.innerHTML = '';
+    span = document.getElementById('bookings-date');
+    span.appendChild(document.createTextNode(query_date));
+
+    fetch(`http://127.0.0.1:8000/bookings-api?date=${query_date}`)
+
+    .then(response => response.json())
+    .then(data => {
+      const pre = document.getElementById('bookings');    
+      pre.innerHTML = '';
+
+      if (data['message'] === 'No Booking') {
+        const message = document.createTextNode('No Bookings');
+        const strong = document.createElement('strong');
+        const p = document.createElement('p');
+
+        strong.appendChild(message);
+        p.appendChild(strong);
+        pre.appendChild(p);
+      }
+      else {
+        for (let key in data) {
+          var content = ''
+          const p = document.createElement('p');
+
+          content += data[key]['first_name'] + ' at ';
+          content += data[key]['reservation_time'] + ' on slot #';
+          content += data[key]['reservation_slot'];
+
+          p.appendChild(document.createTextNode(content));
+          pre.appendChild(p);
+        }
+      }
+
+      console.log(data); 
+    })
+  }
+
+  // form 
+  var date = document.getElementById('id_reservation_date').type='date';
+  const time = document.getElementById('id_reservation_time').type='time';
+
+  // show bookings for selected date
+  date = document.getElementById('id_reservation_date');
+  date.addEventListener('input', fetchBookings);
+
+  // fetch bookings from api endpoint at page loading
+  var span = document.getElementById('bookings-date');
+  fetchBookings();
 
 </script>
 {% endblock %}
