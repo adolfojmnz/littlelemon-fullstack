@@ -32,8 +32,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,8 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'myapp',
-    'comments',
     'restaurant',
 ]
 
@@ -85,9 +81,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'reservations',
-        'USER': 'root',
+        'USER': 'admin',
         'PASSWORD': '',
-        'HOST': 'localhots',
+        'HOST': 'localhost',
         'PORT': 3306,
     }
 }
