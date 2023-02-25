@@ -15,11 +15,13 @@ from .forms import BookingForm
 
 class GetBookingsAsJSONMixin:
 
-    def get_bookings(self):
-        bookings = Booking.objects.filter(reservation_date=datetime.today().date())
+    def get_bookings(self, request):
+        date = request.GET.get('date')
+        reservation_date =  date if date is not None else datetime.today().date()
+        bookings = Booking.objects.filter(reservation_date=reservation_date)
         if bookings.exists():
             return serializers.serialize('json', bookings)
-        return {'bookings': 'No Booking'}
+        return 'No Booking'
 
 
 class Bookings(GetBookingsAsJSONMixin, View):
@@ -27,7 +29,7 @@ class Bookings(GetBookingsAsJSONMixin, View):
 
     def get(self, request):
         context = {
-            'bookings': self.get_bookings()
+            'bookings': self.get_bookings(request)
         }
         return render(request, self.template_name, context)
 
