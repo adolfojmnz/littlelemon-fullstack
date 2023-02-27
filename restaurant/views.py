@@ -46,7 +46,7 @@ class BookingsAPI(APIView):
         if self.queryset.exists():
             serialized_data = self.serializer_class(self.queryset, many=True)
             return Response(serialized_data.data, status=200)
-        return Response({'message': 'No Booking'}, status=404)
+        return Response({'message': 'No Booking'}, status=200)
 
 
 class Book(GetBookingsAsJSONMixin, View):
@@ -56,7 +56,7 @@ class Book(GetBookingsAsJSONMixin, View):
     def get(self, request):
         context = {
             'form': self.form_class(),
-            'bookings': self.get_bookings()
+            'bookings': self.get_bookings(request)
         }
         return render(request, self.template_name, context)
 
@@ -65,7 +65,7 @@ class Book(GetBookingsAsJSONMixin, View):
         if not form.is_valid():
             context = {
                 'form': self.form_class(request.POST),
-                'bookings': self.get_bookings(),
+                'bookings': self.get_bookings(request),
                 'errors': form.errors.as_data(),
             }
             return render(request, self.template_name, context)
@@ -89,4 +89,4 @@ def display_menu_item(request, pk=None):
         menu_item = Menu.objects.get(pk=pk) 
     else: 
         menu_item = "" 
-    return render(request, 'menu_item.html', {"menu_item": menu_item}) 
+    return render(request, 'menu_item.html', {"menu_item": menu_item})
