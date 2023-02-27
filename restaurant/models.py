@@ -20,7 +20,7 @@ RESERVATION_SLOT = [
 class Booking(models.Model):
     first_name = models.CharField(max_length=200)
     reservation_date = models.DateField(default=timezone.now)
-    reservation_slot = models.SmallIntegerField(choices=RESERVATION_SLOT, default=10)
+    reservation_slot = models.SmallIntegerField(choices=RESERVATION_SLOT, default=22)
 
     class Meta:
         unique_together = ['reservation_date', 'reservation_slot']
